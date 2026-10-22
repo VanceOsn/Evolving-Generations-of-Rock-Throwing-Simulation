@@ -18,6 +18,7 @@ class Individual:
         return math.pow(2,Individual.num_bits)*Individual.max_angle
 
 
+
 #input: population size
 #output: list of random Individuals
 #generates a random population
@@ -33,6 +34,8 @@ def gen_individuals(pop):
 
     return individuals
 
+
+
 #input genome int representation, mutation rate
 # chance to flip a bit in the genome depending on mutation rate
 # use during crossover
@@ -42,3 +45,21 @@ def mutation(genome, m):
             genome ^= (1 << i)
 
 
+
+#input Individual, Individual
+#creates a new child individual from a single point cross over
+#crossover position: num_bits // 2
+def crossover(p1,p2):
+    new_angle = math.pow(2,Individual.num_bits)
+    new_speed = math.pow(2,Individual.max_speed)
+    cross_point = Individual.num_bits // 2
+
+    for i in range(Individual.num_bits):
+        if(i <= cross_point):
+            new_angle &= (p1.angle << i)
+            new_speed &= (p1.angle << i)
+        else:
+            new_angle &= (p2.angle << i)
+            new_speed &= (p2.angle << i)
+
+    return Individual(new_angle,new_speed)
