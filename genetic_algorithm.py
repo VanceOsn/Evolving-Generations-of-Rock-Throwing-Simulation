@@ -1,3 +1,4 @@
+import sys
 import random
 import math
 
@@ -63,3 +64,7 @@ def crossover(p1,p2):
             new_speed &= (p2.angle << i)
 
     return Individual(new_angle,new_speed)
+
+def main():
+
+    return
