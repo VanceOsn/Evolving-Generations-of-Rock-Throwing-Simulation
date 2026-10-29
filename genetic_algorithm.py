@@ -12,11 +12,11 @@ class Individual:
         self.speed = speed
         self.angle = angle
 
-    def get_speed(speed):
-        return math.pow(2,Individual.num_bits)*Individual.max_speed
+    def get_speed(individual):
+        return individual.speed / math.pow(2,Individual.num_bits)*Individual.max_speed
 
-    def get_angle(angle):
-        return math.pow(2,Individual.num_bits)*Individual.max_angle
+    def get_angle(individual):
+        return individual.angle / math.pow(2,Individual.num_bits)*Individual.max_angle
 
 
 
@@ -50,21 +50,23 @@ def mutation(genome, m):
 #input Individual, Individual
 #creates a new child individual from a single point cross over
 #crossover position: num_bits // 2
-def crossover(p1,p2):
-    new_angle = math.pow(2,Individual.num_bits)
-    new_speed = math.pow(2,Individual.max_speed)
+def crossover(p1, p2):
     cross_point = Individual.num_bits // 2
+    low_mask = (1 << cross_point) - 1
+    high_mask = ~low_mask
 
-    for i in range(Individual.num_bits):
-        if(i <= cross_point):
-            new_angle &= (p1.angle << i)
-            new_speed &= (p1.angle << i)
-        else:
-            new_angle &= (p2.angle << i)
-            new_speed &= (p2.angle << i)
+    new_angle = (p1.angle & low_mask) | (p2.angle & high_mask)
+    new_speed = (p1.speed & low_mask) | (p2.speed & high_mask)
 
-    return Individual(new_angle,new_speed)
+    return Individual(new_angle, new_speed)
 
 def main():
-
+    individuals = gen_individuals(2)
+    print(individuals[0].angle)
+    p1 = crossover(individuals[0],individuals[1])
+    print(p1.angle)
+    
     return
+
+if __name__ == "__main__":
+        main()
