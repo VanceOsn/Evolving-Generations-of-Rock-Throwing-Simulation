@@ -37,7 +37,8 @@ def gen_individuals(pop):
 
 
 
-#input genome int representation, mutation rate
+#input: genome int representation, mutation rate
+#output:number of bits mutations on p1
 # chance to flip a bit in the genome depending on mutation rate
 # use during crossover
 def mutation(p1, m):
@@ -47,12 +48,17 @@ def mutation(p1, m):
 
     for i in range(Individual.num_bits):
     #chance for speed mutation
-        if(random.randint(0,1) < m):
+        r1 = random.random()
+        r2 = random.random()
+
+        if(r1 < m):
+            print(r1, " < ",m)
             genome1 ^= (1 << i)
             num_mutations+=1
 
     #chance for angle mutation
-        if(random.randint(0,1) < m):
+        if(r2 < m):
+            print(r2, " < ",m)
             genome2 ^= (1 << i)
             num_mutations+=1
 
@@ -75,6 +81,23 @@ def crossover(p1, p2):
 
     return Individual(new_angle, new_speed)
 
+
+
+#input: p1 (individual), target distance, height(default), gravity(default)
+#output: fitness of p1 from distance from the target
+#rates how fit an individual is, higher = less error/more fit
+def fitness(p1, target, h=1, g=9.81):
+    
+    vx = Individual.get_speed(p1)*math.cos(angle)
+    vy = Individual.get_speed(p1)*math.sin(angle)
+    angle = Individual.get_angle(p1)
+
+    dist = (vx / g)(vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
+    error = 1 / (1 - (math.fabs(target-dist)))
+
+    return error
+
+
 def main():
     individuals = gen_individuals(2)
     p1 = individuals[0]
@@ -91,7 +114,7 @@ def main():
     print("p2 ang ",Individual.get_angle(p2))
     print("p3 ang ",Individual.get_angle(p3))
 
-    num_mutations = mutation(p3,0.0001)
+    num_mutations = mutation(p3,0.1)
 
     print("\nmutation\np3 speed ",Individual.get_speed(p3))
     print("p3 ang ",Individual.get_angle(p3))
