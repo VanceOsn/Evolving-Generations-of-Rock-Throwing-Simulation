@@ -40,10 +40,25 @@ def gen_individuals(pop):
 #input genome int representation, mutation rate
 # chance to flip a bit in the genome depending on mutation rate
 # use during crossover
-def mutation(genome, m):
+def mutation(p1, m):
+    genome1 = p1.speed
+    genome2 = p1.angle
+    num_mutations = 0
+
     for i in range(Individual.num_bits):
+    #chance for speed mutation
         if(random.randint(0,1) < m):
-            genome ^= (1 << i)
+            genome1 ^= (1 << i)
+            num_mutations+=1
+
+    #chance for angle mutation
+        if(random.randint(0,1) < m):
+            genome2 ^= (1 << i)
+            num_mutations+=1
+
+    p1.speed = genome1
+    p1.angle = genome2
+    return num_mutations
 
 
 
@@ -62,10 +77,26 @@ def crossover(p1, p2):
 
 def main():
     individuals = gen_individuals(2)
-    print(individuals[0].angle)
-    p1 = crossover(individuals[0],individuals[1])
-    print(p1.angle)
+    p1 = individuals[0]
+    p2 = individuals[1]
+    p3 = crossover(p1,p2)
+
+    print("p1 speed ",Individual.get_speed(p1))
+    print("p2 speed ",Individual.get_speed(p2))
+    print("p3 speed ",Individual.get_speed(p3))
+
     
+
+    print("\n\np1 ang ",Individual.get_angle(p1))
+    print("p2 ang ",Individual.get_angle(p2))
+    print("p3 ang ",Individual.get_angle(p3))
+
+    num_mutations = mutation(p3,0.0001)
+
+    print("\nmutation\np3 speed ",Individual.get_speed(p3))
+    print("p3 ang ",Individual.get_angle(p3))
+    print(num_mutations)
+
     return
 
 if __name__ == "__main__":
