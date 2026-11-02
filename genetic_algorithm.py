@@ -11,6 +11,7 @@ class Individual:
     def __init__(self,angle,speed):
         self.speed = speed
         self.angle = angle
+        fitness = 0
 
     def get_speed(individual):
         return individual.speed / math.pow(2,Individual.num_bits)*Individual.max_speed
@@ -100,15 +101,23 @@ def fitness(p1, target, h=1, g=9.81):
     
     delta = math.fabs(target - dist)
     print("meters from target: ", delta )
-    error = 1 / (1 - delta)
+    fitness = 1 / (1 + delta)
+    p1.fitness = fitness
 
-    return error
+    return fitness
 
-def pack_errors(population, target, h=1, g=9.81):
-    return
+
+def sortby_fitness(population, target, h=1, g=9.81):
+
+    for i in population:
+        fitness(i)
+
+    return sorted(population, key=lambda Individual: fitness, reverse=True)
 
 def rws_selection(population, dec_best=0.6):
-    return
+    num_best = int(population.length * dec_best)
+
+    return population[:num_best]
 
 def simulate_generations(target, max_gen, max_plateu, h=1, g=9.81):
     return
