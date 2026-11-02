@@ -97,11 +97,21 @@ def fitness(p1, target, h=1, g=9.81):
     dist = f1*f2
           
     #dist = (vx / g)(vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
+    
     delta = math.fabs(target - dist)
     print("meters from target: ", delta )
     error = 1 / (1 - delta)
 
     return error
+
+def pack_errors(population, target, h=1, g=9.81):
+    return
+
+def rws_selection(population, dec_best=0.6):
+    return
+
+def simulate_generations(target, max_gen, max_plateu, h=1, g=9.81):
+    return
 
 
 def main():
