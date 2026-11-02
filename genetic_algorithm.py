@@ -4,7 +4,7 @@ import math
 
 #Individual class, specifies max values of genomes and genome decoding methods
 class Individual: 
-    max_speed = 40 #m/s
+    max_speed = 60 #m/s
     max_angle = 90 #degrees
     num_bits = 10
 
@@ -42,7 +42,7 @@ def gen_individuals(pop):
 #output:number of bits mutations on p1
 # chance to flip a bit in the genome depending on mutation rate
 # use during crossover
-def mutation(p1, m):
+def mutation(p1, m=0.01):
     genome1 = p1.speed
     genome2 = p1.angle
     num_mutations = 0
@@ -53,13 +53,11 @@ def mutation(p1, m):
         r2 = random.random()
 
         if(r1 < m):
-            print(r1, " < ",m)
             genome1 ^= (1 << i)
             num_mutations+=1
 
     #chance for angle mutation
         if(r2 < m):
-            print(r2, " < ",m)
             genome2 ^= (1 << i)
             num_mutations+=1
 
@@ -100,7 +98,6 @@ def fitness(p1, target, h=1, g=9.81):
     #dist = (vx / g)(vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
     
     delta = math.fabs(target - dist)
-    print("meters from target: ", delta )
     fitness = 1 / (1 + delta)
     p1.fitness = fitness
 
@@ -110,44 +107,46 @@ def fitness(p1, target, h=1, g=9.81):
 def sortby_fitness(population, target, h=1, g=9.81):
 
     for i in population:
-        fitness(i)
+        fitness(i,target,h,g)
 
-    return sorted(population, key=lambda Individual: fitness, reverse=True)
+    return sorted(population, key=lambda Individual: Individual.fitness, reverse=True)
+
+
 
 def rws_selection(population, dec_best=0.6):
-    num_best = int(population.length * dec_best)
+    num_best = int(len(population) * dec_best)
+    best=[]
+    for i in range(num_best):
+        best.append(population[i])
 
-    return population[:num_best]
+    return best
+
+
+
 
 def simulate_generations(target, max_gen, max_plateu, h=1, g=9.81):
+
     return
 
 
 def main():
-    individuals = gen_individuals(2)
-    p1 = individuals[0]
-    p2 = individuals[1]
-    p3 = crossover(p1,p2)
+    individuals = gen_individuals(50)
+    individuals = sortby_fitness(individuals,15)
 
-    print("p1 speed ",Individual.get_speed(p1))
-    print("p2 speed ",Individual.get_speed(p2))
-    print("p3 speed ",Individual.get_speed(p3))
+    for i in individuals:
+        print(i.fitness)
 
-    
+    print("\nthe best 60%: ")
 
-    print("\n\np1 ang ",Individual.get_angle(p1))
-    print("p2 ang ",Individual.get_angle(p2))
-    print("p3 ang ",Individual.get_angle(p3))
+    best = rws_selection(individuals)
+    for i in best:
+        print(i.fitness)
 
-    num_mutations = mutation(p3,0.1)
-
-    print("\nmutation\np3 speed ",Individual.get_speed(p3))
-    print("p3 ang ",Individual.get_angle(p3))
-    print(num_mutations)
-
-    #print(Individual.get_angle(p3))
-    #print(math.cos(Individual.get_angle(p3)))
-    print("\nfitness: ",fitness(p1,30))
+    children = []
+    for i in range(len(best)-1):
+        child = crossover(best[i],best[i+1])
+        child = mutation(child)
+        children.append(child)
 
     return
 
