@@ -70,13 +70,22 @@ def mutation(p1, m=0.01):
 #input Individual, Individual
 #creates a new child individual from a single point cross over
 #crossover position: num_bits // 2
-def crossover(p1, p2):
-    cross_point = Individual.num_bits // 2
-    low_mask = (1 << cross_point) - 1
-    high_mask = ~low_mask
+# def crossover(p1, p2):
+#     cross_point = Individual.num_bits // 2
+#     low_mask = (1 << cross_point) - 1
+#     high_mask = ~low_mask
 
-    new_angle = (p1.angle & low_mask) | (p2.angle & high_mask)
-    new_speed = (p1.speed & low_mask) | (p2.speed & high_mask)
+#     new_angle = (p1.angle & low_mask) | (p2.angle & high_mask)
+#     new_speed = (p1.speed & low_mask) | (p2.speed & high_mask)
+
+#     return Individual(new_angle, new_speed)
+
+def random_crossover(p1,p2):
+    mask = random.getrandbits(Individual.num_bits)
+    inv_mask = ~mask
+
+    new_angle = (p1.angle & mask) | (p2.angle & inv_mask)
+    new_speed = (p1.speed & mask) | (p2.speed & inv_mask)
 
     return Individual(new_angle, new_speed)
 
@@ -133,32 +142,30 @@ def main():
     individuals = gen_individuals(50)
     individuals = sortby_fitness(individuals,15)
 
-    for i in individuals:
-        print(i.fitness)
 
-    print("\nthe best 60%: ")
+    
 
     sum_b = 0
     best = rws_selection(individuals)
     for i in best:
         sum_b += i.fitness
-        print(i.fitness)
 
     print("\nmutating the children...\n children:\n")
     childs = []
+    num_mutation = 0
     for i in range(len(best)-1):
-        child = crossover(best[i],best[i+1])
-        mutation(child)
+        child = random_crossover(best[i],best[i+1])
+        num_mutation += mutation(child)
         childs.append(child)
-
-    for i in sortby_fitness(childs,15):
-        print(i.fitness)
+    print("mutations: ", num_mutation)
+    childs = sortby_fitness(childs,15)
+    best_c = rws_selection(childs)
 
     sum_c =0
-    for i in childs:
+    for i in best_c:
         sum_c+=i.fitness
 
-    c_av = sum_c/len(childs)
+    c_av = sum_c/len(best_c)
     p_av = sum_b / len(best)
 
     print("\n\naverage parent fitness: ",p_av)
