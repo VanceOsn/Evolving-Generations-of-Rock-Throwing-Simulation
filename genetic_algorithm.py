@@ -87,13 +87,19 @@ def crossover(p1, p2):
 #output: fitness of p1 from distance from the target
 #rates how fit an individual is, higher = less error/more fit
 def fitness(p1, target, h=1, g=9.81):
-    
-    vx = Individual.get_speed(p1)*math.cos(angle)
-    vy = Individual.get_speed(p1)*math.sin(angle)
-    angle = Individual.get_angle(p1)
 
-    dist = (vx / g)(vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
-    error = 1 / (1 - (math.fabs(target-dist)))
+    angle = Individual.get_angle(p1) * (math.pi/180) #convert to rad
+    vx = Individual.get_speed(p1) * math.cos(angle)
+    vy = Individual.get_speed(p1) * math.sin(angle)
+    
+    f1 = (vx/g)
+    f2 = (vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
+    dist = f1*f2
+          
+    #dist = (vx / g)(vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
+    delta = math.fabs(target - dist)
+    print("meters from target: ", delta )
+    error = 1 / (1 - delta)
 
     return error
 
@@ -119,6 +125,10 @@ def main():
     print("\nmutation\np3 speed ",Individual.get_speed(p3))
     print("p3 ang ",Individual.get_angle(p3))
     print(num_mutations)
+
+    #print(Individual.get_angle(p3))
+    #print(math.cos(Individual.get_angle(p3)))
+    print("\nfitness: ",fitness(p1,30))
 
     return
 
