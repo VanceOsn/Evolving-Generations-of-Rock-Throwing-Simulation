@@ -11,7 +11,7 @@ class Individual:
     def __init__(self,angle,speed):
         self.speed = speed
         self.angle = angle
-        fitness = 0
+        self.fitness = 0
 
     def get_speed(individual):
         return individual.speed / math.pow(2,Individual.num_bits)*Individual.max_speed
@@ -138,15 +138,31 @@ def main():
 
     print("\nthe best 60%: ")
 
+    sum_b = 0
     best = rws_selection(individuals)
     for i in best:
+        sum_b += i.fitness
         print(i.fitness)
 
-    children = []
+    print("\nmutating the children...\n children:\n")
+    childs = []
     for i in range(len(best)-1):
         child = crossover(best[i],best[i+1])
-        child = mutation(child)
-        children.append(child)
+        mutation(child)
+        childs.append(child)
+
+    for i in sortby_fitness(childs,15):
+        print(i.fitness)
+
+    sum_c =0
+    for i in childs:
+        sum_c+=i.fitness
+
+    c_av = sum_c/len(childs)
+    p_av = sum_b / len(best)
+
+    print("\n\naverage parent fitness: ",p_av)
+    print("average child fitness: ",c_av)
 
     return
 
