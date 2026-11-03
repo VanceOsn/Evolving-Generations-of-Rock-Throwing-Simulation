@@ -105,7 +105,7 @@ def fitness(p1, target, h=1, g=9.81):
     dist = f1*f2
           
     #dist = (vx / g)(vy + math.sqrt(math.pow(vy,2) + 2 * g * h))
-    
+    p1.distance = dist
     delta = math.fabs(target - dist)
     fitness = 1 / (1 + delta)
     p1.fitness = fitness
@@ -133,43 +133,78 @@ def rws_selection(population, dec_best=0.6):
 
 
 
-def simulate_generations(target, max_gen, max_plateu, h=1, g=9.81):
+def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01, h=1, g=9.81):
+    individuals = gen_individuals(pop)
+    current_gen = 1
+    plateau = 0
 
-    return
+    individuals = sortby_fitness(individuals,target,h,g)
+    current_best = individuals[0]
+
+#generation loop
+    while(current_gen <= max_gen and plateau <= max_plateu):
+        #individuals = sortby_fitness(individuals,target)
+        selected = rws_selection(individuals,dec_best)
+
+        #perform crossovers and roll mutation
+        children = []
+        for i in range(len(selected)-1):
+            child = random_crossover(selected[i],selected[i+1])
+            mutation(child,m)
+            children.append(child)
+        #calculate fitness
+        individuals = sortby_fitness(children,target,h,g)
+        print("LENGTH OF INDIVIDUALS", len(individuals))
+        #new best?
+        if(current_best.fitness >= individuals[0].fitness):
+            plateau+=1
+        else:
+            current_best = individuals[0]
+        current_gen+=1
+        print("generation: ",current_gen," best fitness: ", current_best.fitness)
+
+    if(plateau >= max_plateu):
+        print("no improvement for ",plateau," generations")
+
+    print("\n-best individual-\nangle: ", Individual.get_angle(current_best),"\nspeed: ", Individual.get_speed(current_best),
+          "\ndistance from target: ", (1/current_best.fitness)-1)
+    
+    return current_best
 
 
 def main():
-    individuals = gen_individuals(50)
-    individuals = sortby_fitness(individuals,15)
+    simulate_generations(50,20,10,2)
+    # individuals = gen_individuals(50)
+    # individuals = sortby_fitness(individuals,15)
 
 
     
 
-    sum_b = 0
-    best = rws_selection(individuals)
-    for i in best:
-        sum_b += i.fitness
+    # sum_b = 0
+    # best = rws_selection(individuals)
+    # for i in best:
+    #     sum_b += i.fitness
 
-    print("\nmutating the children...\n children:\n")
-    childs = []
-    num_mutation = 0
-    for i in range(len(best)-1):
-        child = random_crossover(best[i],best[i+1])
-        num_mutation += mutation(child)
-        childs.append(child)
-    print("mutations: ", num_mutation)
-    childs = sortby_fitness(childs,15)
-    best_c = rws_selection(childs)
+    # print("\nmutating the children...\n children:\n")
+    # childs = []
+    # num_mutation = 0
+    # for i in range(len(best)-1):
+    #     child = random_crossover(best[i],best[i+1])
+    #     num_mutation += mutation(child)
+    #     childs.append(child)
+    # print("mutations: ", num_mutation)
+    # childs = sortby_fitness(childs,15)
+    # best_c = rws_selection(childs)
 
-    sum_c =0
-    for i in best_c:
-        sum_c+=i.fitness
+    # sum_c =0
+    # for i in best_c:
+    #     sum_c+=i.fitness
 
-    c_av = sum_c/len(best_c)
-    p_av = sum_b / len(best)
+    # c_av = sum_c/len(best_c)
+    # p_av = sum_b / len(best)
 
-    print("\n\naverage parent fitness: ",p_av)
-    print("average child fitness: ",c_av)
+    # print("\n\naverage parent fitness: ",p_av)
+    # print("average child fitness: ",c_av)
 
     return
 
