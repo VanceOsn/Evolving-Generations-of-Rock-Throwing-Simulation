@@ -172,6 +172,36 @@ def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01,
     return current_best
 
 
+def cross_until(final_size, pop, m, dec_elite):
+    paired = {} # p1,p2 and p2,p1 allowed
+    count = len(pop)
+    num_elite = int(len(pop) * dec_elite)
+    new_pop =[]
+
+
+    while(count <= final_size - num_elite):
+        p1 = random.choice(pop)
+        p2 = random.choice(pop)
+        pair = p1,p2
+        if(pair in paired):
+
+            if(reversed(pair) in paired):
+                continue
+            
+            child = random_crossover(p2,p1)
+            pair = p2,p1
+        else:
+            child = random_crossover(p1,p2)
+
+        
+        new_pop.append(child)
+        paired.add(pair)
+
+
+
+    return
+
+
 def main():
     simulate_generations(50,20,10,2)
     # individuals = gen_individuals(50)
