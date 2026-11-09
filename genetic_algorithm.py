@@ -1,6 +1,8 @@
 import sys
 import random
 import math
+import pymunk
+import pygame
 
 #Individual class, specifies max values of genomes and genome decoding methods
 class Individual: 
@@ -70,15 +72,18 @@ def mutation(p1, m=0.01):
 #input Individual, Individual
 #creates a new child individual from a single point cross over
 #crossover position: num_bits // 2
-# def crossover(p1, p2):
-#     cross_point = Individual.num_bits // 2
-#     low_mask = (1 << cross_point) - 1
-#     high_mask = ~low_mask
+def crossover(p1, p2):
+    cross_point = Individual.num_bits // 2
+    low_mask = (1 << cross_point) - 1
+    high_mask = ~low_mask
 
-#     new_angle = (p1.angle & low_mask) | (p2.angle & high_mask)
-#     new_speed = (p1.speed & low_mask) | (p2.speed & high_mask)
+    new_angle = (p1.angle & low_mask) | (p2.angle & high_mask)
+    new_speed = (p1.speed & low_mask) | (p2.speed & high_mask)
 
-#     return Individual(new_angle, new_speed)
+    return Individual(new_angle, new_speed)
+
+
+
 
 def random_crossover(p1,p2):
     mask = random.getrandbits(Individual.num_bits)
@@ -133,7 +138,7 @@ def rws_selection(population, dec_best=0.6):
 
 
 
-def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01, h=1, g=9.81):
+def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01, h=1, g=9.81, dec_elite=0.05):
     individuals = gen_individuals(pop)
     current_gen = 1
     plateau = 0
@@ -146,13 +151,18 @@ def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01,
         #individuals = sortby_fitness(individuals,target)
         selected = rws_selection(individuals,dec_best)
 
+
+
         #perform crossovers and roll mutation
-        children = []
-        for i in range(len(selected)-1):
-            child = random_crossover(selected[i],selected[i+1])
-            mutation(child,m)
-            children.append(child)
+        # children = []
+        # for i in range(len(selected)-1):
+        #     child = random_crossover(selected[i],selected[i+1])
+        #     mutation(child,m)
+        #     children.append(child)
         #calculate fitness
+
+        children = cross_until(selected, pop, m, dec_elite)
+
         individuals = sortby_fitness(children,target,h,g)
         print("LENGTH OF INDIVIDUALS", len(individuals))
         #new best?
@@ -172,11 +182,15 @@ def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01,
     return current_best
 
 
-def cross_until(final_size, pop, m, dec_elite):
-    paired = {} # p1,p2 and p2,p1 allowed
-    count = len(pop)
+
+#population must be sorted or elites will be random
+def cross_until(pop, final_size, m, dec_elite):
+    paired = set() # p1,p2 and p2,p1 allowed
+
     num_elite = int(len(pop) * dec_elite)
-    new_pop =[]
+    new_pop = pop[:num_elite]
+
+    count = len(new_pop)
 
 
     while(count <= final_size - num_elite):
@@ -193,17 +207,17 @@ def cross_until(final_size, pop, m, dec_elite):
         else:
             child = random_crossover(p1,p2)
 
-        
+        mutation(child,m)
         new_pop.append(child)
         paired.add(pair)
+        count+=1    
 
+    return new_pop
 
-
-    return
 
 
 def main():
-    simulate_generations(50,20,10,2)
+    simulate_generations(110,20,20,10,0.1,0.01)
     # individuals = gen_individuals(50)
     # individuals = sortby_fitness(individuals,15)
 
