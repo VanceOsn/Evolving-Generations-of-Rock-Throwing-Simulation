@@ -137,9 +137,17 @@ def rws_selection(population, dec_best=0.6):
 
 
 
+def single_generation(pop, target, dec_best=0.6, m=0.01, h=1, g=9.81, dec_elite=0.05):
+    pop = sortby_fitness(pop,target,h,g)
+    selected = rws_selection(pop, dec_best)
 
-def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01, h=1, g=9.81, dec_elite=0.05):
-    individuals = gen_individuals(pop)
+    return
+
+
+
+
+def simulate_generations(size, target, max_gen, max_plateu, dec_best=0.6, dec_elite=0.05, m=0.01, h=1, g=9.81):
+    individuals = gen_individuals(size)
     current_gen = 1
     plateau = 0
 
@@ -161,7 +169,7 @@ def simulate_generations(pop, target, max_gen, max_plateu, dec_best=0.6, m=0.01,
         #     children.append(child)
         #calculate fitness
 
-        children = cross_until(selected, pop, m, dec_elite)
+        children = cross_until(selected, size, m, dec_elite)
 
         individuals = sortby_fitness(children,target,h,g)
         print("LENGTH OF INDIVIDUALS", len(individuals))
@@ -217,7 +225,7 @@ def cross_until(pop, final_size, m, dec_elite):
 
 
 def main():
-    simulate_generations(110,20,20,10,0.1,0.01)
+    simulate_generations(110,30,40,10)
     # individuals = gen_individuals(50)
     # individuals = sortby_fitness(individuals,15)
 
