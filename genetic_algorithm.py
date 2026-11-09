@@ -6,7 +6,7 @@ import pygame
 
 #Individual class, specifies max values of genomes and genome decoding methods
 class Individual: 
-    max_speed = 60 #m/s
+    max_speed = 100 #m/s
     max_angle = 90 #degrees
     num_bits = 10
 
@@ -225,7 +225,7 @@ def cross_until(pop, final_size, m, dec_elite):
 
 
 def main():
-    simulate_generations(110,30,40,10)
+    simulate_generations(100,30,40,10)
     # individuals = gen_individuals(50)
     # individuals = sortby_fitness(individuals,15)
 
